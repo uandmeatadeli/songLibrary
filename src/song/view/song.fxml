@@ -2,16 +2,28 @@
 
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TextField?>
 
 <AnchorPane
         xmlns="http://javafx.com/javafx/11"
         xmlns:fx="http://javafx.com/fxml/1"
         fx:controller="song.view.songController">
 
-    <ListView fx:id="listView"
+        <VBox fx:id="VBox"
               AnchorPane.topAnchor = "10"
               AnchorPane.leftAnchor = "10"
               AnchorPane.rightAnchor = "10"
-              AnchorPane.bottomAnchor = "10"/>
+              AnchorPane.bottomAnchor = "10">
 
+            <TextField fx:id="textField"/>
+
+            <HBox fx:id="HBox">
+                <ListView fx:id="titleListView" prefHeight="200.0"/>
+                <ListView fx:id="artistListView" prefHeight="200.0"/>
+                <ListView fx:id="albumListView" prefHeight="200.0"/>
+                <ListView fx:id="yearListView" prefHeight="200.0"/>
+            </HBox>
+        </VBox>
 </AnchorPane>

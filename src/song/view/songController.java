@@ -1,6 +1,12 @@
 package song.view;
 
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.Scanner;
+
+import java.io.File;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,36 +15,85 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 public class songController {
     @FXML
-    ListView<String> listView;
+    ListView<String> titleListView;
+    @FXML
+    ListView<String> artistListView;
+    @FXML
+    ListView<String> albumListView;
+    @FXML
+    ListView<String> yearListView;
+    @FXML
+    HBox HBox;
 
-    private ObservableList<String> obsList;
+    String line;
+    String[] songs;
+    String[] elements;
+    ArrayList<String> title = new ArrayList<String>();
+    ArrayList<String> artist = new ArrayList<String>();
+    ArrayList<String> album = new ArrayList<String>();
+    ArrayList<String> year = new ArrayList<String>();
+    private ObservableList<String> obsTitleList;
+    private ObservableList<String> obsArtistList;
+    private ObservableList<String> obsAlbumList;
+    private ObservableList<String> obsYearList;
 
     public void start(Stage mainStage) {
         // create an ObservableList
         // from an ArrayList
-        obsList = FXCollections.observableArrayList(
-                "Rams",
-                "Bengals",
-                "49ers",
-                "Giants",
-                "Packers",
-                "Colts",
-                "Cowboys",
-                "Broncos",
-                "Vikings",
-                "Dolphins",
-                "Titans",
-                "Seahawks",
-                "Steelers",
-                "Jaguars",
-                "Chiefs",
-                "Eagles",
-                "Buccaneers",
-                "Lions");
 
+        // create read from file to pull songs
+        try {
+            File songFile = new File("songFile.txt");
+            //System.out.println(songFile.exists());
+            Scanner scanner = new Scanner(songFile);
+            while(scanner.hasNextLine()){
+                line = scanner.nextLine();
+                songs = line.split(";");
+                //System.out.println(songs);
+                //songs.add(scanner.next());
+            }
+            for(int i = 0; i < songs.length; i++){
+                elements = songs[i].split(",");
+                title.add(elements[0]);
+                artist.add(elements[1]);
+                album.add(elements[2]);
+                year.add(elements[3]);
+            }
+            //ArrayList<String> songsList = new ArrayList<String>(Arrays.asList(songs));
+            obsTitleList = FXCollections.observableArrayList(title);
+            obsArtistList = FXCollections.observableArrayList(artist);
+            obsAlbumList = FXCollections.observableArrayList(album);
+            obsYearList = FXCollections.observableArrayList(year);
+        } catch(FileNotFoundException e){
+            System.out.println("ERROR");
+        }
+
+        setListener(mainStage,titleListView,obsTitleList);
+        setListener(mainStage,artistListView,obsArtistList);
+        setListener(mainStage,albumListView,obsAlbumList);
+        setListener(mainStage,yearListView,obsYearList);
+
+//        titleListView.setItems(obsTitleList);
+//
+//        // select the first item
+//        titleListView.getSelectionModel().select(0);
+//
+//        // set listener for the items
+//        titleListView
+//                .getSelectionModel()
+//                .selectedIndexProperty()
+//                .addListener(
+//                        (obs, oldVal, newVal) ->
+//                                //showItem(mainStage)
+//                                showItemInputDialog(mainStage, titleListView, obsTitleList)
+//                );
+    }
+
+    private void setListener(Stage mainStage,ListView<String> listView,ObservableList<String> obsList){
         listView.setItems(obsList);
 
         // select the first item
@@ -51,11 +106,11 @@ public class songController {
                 .addListener(
                         (obs, oldVal, newVal) ->
                                 //showItem(mainStage)
-                                showItemInputDialog(mainStage)
+                                showItemInputDialog(mainStage, listView, obsList)
                 );
     }
 
-    private void showItem(Stage mainStage) {
+    private void showItem(Stage mainStage, ListView<String> listView) {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.initOwner(mainStage);
         alert.setTitle("List Item");
@@ -73,7 +128,7 @@ public class songController {
         alert.showAndWait();
     }
 
-    private void showItemInputDialog(Stage mainStage) {
+    private void showItemInputDialog(Stage mainStage, ListView<String> listView, ObservableList<String> obsList) {
         String item = listView.getSelectionModel().getSelectedItem();
         int index = listView.getSelectionModel().getSelectedIndex();
 

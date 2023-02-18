@@ -26,7 +26,7 @@ public class songApp extends Application{
 
         SongController.start(primaryStage);
 
-        Scene scene = new Scene(root, 200, 300);
+        Scene scene = new Scene(root, 600, 200);
         primaryStage.setScene(scene);
         primaryStage.show();
 
