@@ -2,7 +2,6 @@ package song.view;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -10,12 +9,10 @@ import java.io.File;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 public class songController {
     @FXML
@@ -27,11 +24,26 @@ public class songController {
     @FXML
     ListView<String> yearListView;
     @FXML
-    HBox HBox;
+    TextField titleDisplay;
+    @FXML
+    TextField artistDisplay;
+    @FXML
+    TextField albumDisplay;
+    @FXML
+    TextField yearDisplay;
+    @FXML
+    Button Add;
+    @FXML
+    Button Edit;
+    @FXML
+    Button Delete;
+
 
     String line;
     String[] songs;
     String[] elements;
+
+    ScrollBar titleScroll;
     ArrayList<String> title = new ArrayList<String>();
     ArrayList<String> artist = new ArrayList<String>();
     ArrayList<String> album = new ArrayList<String>();
@@ -77,6 +89,15 @@ public class songController {
         setListener(mainStage,albumListView,obsAlbumList);
         setListener(mainStage,yearListView,obsYearList);
 
+//        ScrollBar titleScroll = (ScrollBar) titleListView.lookup(".scroll-bar:vertical");
+//        ScrollBar artistScroll = (ScrollBar) artistListView.lookup(".scroll-bar:vertical");
+//        ScrollBar albumScroll = (ScrollBar) albumListView.lookup(".scroll-bar:vertical");
+//        ScrollBar yearScroll = (ScrollBar) yearListView.lookup(".scroll-bar:vertical");
+//
+//        yearScroll.valueProperty().bindBidirectional(albumScroll.valueProperty());
+//        albumScroll.valueProperty().bindBidirectional(artistScroll.valueProperty());
+//        artistScroll.valueProperty().bindBidirectional(titleScroll.valueProperty());
+
 //        titleListView.setItems(obsTitleList);
 //
 //        // select the first item
@@ -91,6 +112,7 @@ public class songController {
 //                                //showItem(mainStage)
 //                                showItemInputDialog(mainStage, titleListView, obsTitleList)
 //                );
+
     }
 
     private void setListener(Stage mainStage,ListView<String> listView,ObservableList<String> obsList){
@@ -105,7 +127,7 @@ public class songController {
                 .selectedIndexProperty()
                 .addListener(
                         (obs, oldVal, newVal) ->
-                                //showItem(mainStage)
+                                //showItem(mainStage, listView)
                                 showItemInputDialog(mainStage, listView, obsList)
                 );
     }
@@ -141,4 +163,7 @@ public class songController {
         if (result.isPresent()) { obsList.set(index, result.get()); }
     }
 
+    @FXML
+    public void addSong(ActionEvent actionEvent) {
+    }
 }
