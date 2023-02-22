@@ -8,7 +8,7 @@ import javafx.scene.control.ScrollBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import song.view.songController;
-public class songLib extends Application{
+public class SongLib extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception {
 
