@@ -215,19 +215,23 @@ public class songController {
             Optional<ButtonType> result = alert.showAndWait();
 
             if(result.get() == okButton) {
-                Song newSong = new Song(titleDisplay.getText().trim(), artistDisplay.getText().trim(),albumDisplay.getText().trim(), yearDisplay.getText().trim());
-                obsList.add(newSong);
-                obsList.sort(Comparator.comparing(Song::getName, String.CASE_INSENSITIVE_ORDER)
-                        .thenComparing(Song::getArtist, String.CASE_INSENSITIVE_ORDER));
-                listView.setItems(obsList);
-                listView.getSelectionModel().select(newSong);
-                titleDisplay.setText("");
-                setTextName(newSong);
+                createSong();
                 Delete.setDisable(false);
                 Edit.setDisable(false);
                 saveFile();
             }
         }
+    }
+
+    public void createSong() {
+        Song newSong = new Song(titleDisplay.getText().trim(), artistDisplay.getText().trim(),albumDisplay.getText().trim(), yearDisplay.getText().trim());
+        obsList.add(newSong);
+        obsList.sort(Comparator.comparing(Song::getName, String.CASE_INSENSITIVE_ORDER)
+                .thenComparing(Song::getArtist, String.CASE_INSENSITIVE_ORDER));
+        listView.setItems(obsList);
+        listView.getSelectionModel().select(newSong);
+        titleDisplay.setText("");
+        setTextName(newSong);
     }
 
     public void setTextName(Song item) {
@@ -335,7 +339,6 @@ public class songController {
         }else {
             Song item = listView.getSelectionModel().getSelectedItem();
             int index = listView.getSelectionModel().getSelectedIndex();
-
             titleDisplay.setPromptText(item.name);
             artistDisplay.setPromptText(item.artist);
             albumDisplay.setPromptText(item.album);
@@ -358,9 +361,7 @@ public class songController {
                 System.out.println("Index: "+ index );
                 System.out.println("Text1: "+returnIndex(titleDisplay.getText().trim(), artistDisplay.getText().trim()) );
                 obRemove(index);
-
             }else {
-
                 alertDialogue("Duplicate Input Error!", "Sorry, Duplicate Name and Artist Are Not Allowed");
                 System.out.println("Duplicate Entry!");
                 System.out.println("Unable to Save!");
@@ -370,20 +371,10 @@ public class songController {
             obRemove(index);
 
         }
-
     }
-
     private void obRemove(int index) throws IOException {
         obsList.remove(index);
-        Song newSong = new Song(titleDisplay.getText().trim(), artistDisplay.getText().trim(),albumDisplay.getText().trim(), yearDisplay.getText().trim());
-        obsList.add(newSong);
-        obsList.sort(Comparator.comparing(Song::getName, String.CASE_INSENSITIVE_ORDER)
-                .thenComparing(Song::getArtist, String.CASE_INSENSITIVE_ORDER));
-        listView.setItems(obsList);
-        listView.getSelectionModel().select(newSong);
-
-        titleDisplay.setText("");
-        setTextName(newSong);
+        createSong();
 
         Edit.setVisible(true);
         Save.setVisible(false);
