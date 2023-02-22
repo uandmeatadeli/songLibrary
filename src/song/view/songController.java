@@ -96,6 +96,7 @@ public class songController {
                 album.add(elements[2]);
                 year.add(elements[3]);
             }
+            //ArrayList<String> songsList = new ArrayList<String>(Arrays.asList(songs));
             obsTitleList = FXCollections.observableArrayList(title);
             obsArtistList = FXCollections.observableArrayList(artist);
             obsAlbumList = FXCollections.observableArrayList(album);
@@ -161,7 +162,9 @@ public class songController {
 
     @FXML
     public void addSong(ActionEvent actionEvent) throws IOException {
+
         Song item = listView.getSelectionModel().getSelectedItem();
+
         if(obsList.isEmpty()) {
             System.out.println("List Is Empty");
             Delete.setDisable(true);
@@ -169,8 +172,8 @@ public class songController {
         }
         if(titleDisplay.getText().trim().isEmpty() || artistDisplay.getText().trim().isEmpty()){
             alertDialogue("Invalid Input", "Sorry, Name And Artist Are Required");
+            titleDisplay.setText("");
             if(item == null) {
-                titleDisplay.setText("");
                 titleDisplay.setPromptText("");
                 artistDisplay.setText("");
                 artistDisplay.setPromptText("");
@@ -179,31 +182,25 @@ public class songController {
                 yearDisplay.setText("");
                 yearDisplay.setPromptText("");
             }else {
-                titleDisplay.setText("");
-                titleDisplay.setPromptText(item.name);
-                artistDisplay.setText("");
-                artistDisplay.setPromptText(item.artist);
-                albumDisplay.setText("");
-                albumDisplay.setPromptText(item.album);
-                yearDisplay.setText("");
-                yearDisplay.setPromptText(item.year);
+                setTextName(item);
             }
         }else if(isNameArtistInList(titleDisplay.getText().trim(),artistDisplay.getText().trim()  )){
             System.out.println("Duplicate Entry!");
+
             alertDialogue("Duplicate Input Error!", "Sorry, Duplicate Name and Artist Are Not Allowed");
+
             titleDisplay.setText("");
-            titleDisplay.setPromptText(item.name);
-            artistDisplay.setText("");
-            artistDisplay.setPromptText(item.artist);
-            albumDisplay.setText("");
-            albumDisplay.setPromptText(item.album);
-            yearDisplay.setText("");
-            yearDisplay.setPromptText(item.year);
-        }else if((yearDisplay.getText().trim().isEmpty() ) || !(isValid(yearDisplay.getText().trim()))){
+            setTextName(item);
+
+        }else if(!(yearDisplay.getText().trim().isEmpty() ) && !(isValid(yearDisplay.getText().trim()))){
+
             alertDialogue("Invalid Input", "Please Enter A Valid Number In Year Column");
+
             yearDisplay.setText("");
+
             System.out.println("The number is not valid");
         }else {
+
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Add Song");
             alert.setHeaderText("Do you want to add song?");
@@ -214,7 +211,9 @@ public class songController {
                     "Artist Name:\t" + artistDisplay.getText() + "\n" +
                     "Album Name:\t" + albumDisplay.getText() + "\n" +
                     "Release Year:\t" + yearDisplay.getText());
+
             Optional<ButtonType> result = alert.showAndWait();
+
             if(result.get() == okButton) {
                 Song newSong = new Song(titleDisplay.getText().trim(), artistDisplay.getText().trim(),albumDisplay.getText().trim(), yearDisplay.getText().trim());
                 obsList.add(newSong);
@@ -223,19 +222,24 @@ public class songController {
                 listView.setItems(obsList);
                 listView.getSelectionModel().select(newSong);
                 titleDisplay.setText("");
-                titleDisplay.setPromptText(newSong.name);
-                artistDisplay.setText("");
-                artistDisplay.setPromptText(newSong.artist);
-                albumDisplay.setText("");
-                albumDisplay.setPromptText(newSong.album);
-                yearDisplay.setText("");
-                yearDisplay.setPromptText(newSong.year);
+                setTextName(newSong);
                 Delete.setDisable(false);
                 Edit.setDisable(false);
                 saveFile();
             }
         }
     }
+
+    public void setTextName(Song item) {
+        titleDisplay.setPromptText(item.name);
+        artistDisplay.setText("");
+        artistDisplay.setPromptText(item.artist);
+        albumDisplay.setText("");
+        albumDisplay.setPromptText(item.album);
+        yearDisplay.setText("");
+        yearDisplay.setPromptText(item.year);
+    }
+
     @FXML
     void deleteSong(ActionEvent event) throws IOException {
         if(obsList.isEmpty()) {
@@ -254,6 +258,7 @@ public class songController {
                     "Artist Name:\t" + item.artist + "\n" +
                     "Album Name:\t" + item.album + "\n" +
                     "Release Year:\t" + item.year);
+
             Optional<ButtonType> result = alert.showAndWait();
             if(result.get() == okButton)
             {
@@ -276,26 +281,16 @@ public class songController {
                 }else {
                     listView.getSelectionModel().select(index);
                     item = listView.getSelectionModel().getSelectedItem();
-
                     titleDisplay.setText("");
-                    titleDisplay.setPromptText(item.name);
-                    artistDisplay.setText("");
-                    artistDisplay.setPromptText(item.artist);
-                    albumDisplay.setText("");
-                    albumDisplay.setPromptText(item.album);
-                    yearDisplay.setText("");
-                    yearDisplay.setPromptText(item.year);
+                    setTextName(item);
                     obsList.sort(Comparator.comparing(Song::getName, String.CASE_INSENSITIVE_ORDER)
                             .thenComparing(Song::getArtist, String.CASE_INSENSITIVE_ORDER));
-                    //obsList.sort(Comparator.comparing(Song::getName, String.CASE_INSENSITIVE_ORDER));
-                    //obsList.sort(Comparator.comparing(Song::getName));
+
                     saveFile();
                 }
-
             }
         }
     }
-
     @FXML
     void editSong(ActionEvent event) {
         Edit.setVisible(false);
@@ -306,12 +301,9 @@ public class songController {
         titleDisplay.setText(item.name);
         artistDisplay.setText(item.artist);
         albumDisplay.setText(item.album);
-        if((yearDisplay.getText().trim().isEmpty() ) || !(isValid(yearDisplay.getText().trim()))){
-
+        if(!(yearDisplay.getText().trim().isEmpty() ) && !(isValid(yearDisplay.getText().trim()))){
             alertDialogue("Invalid Input", "Please Enter A Valid Number In Year Column");
-
             yearDisplay.setText("");
-
             System.out.println("The number is not valid");
         }
         else{
@@ -322,31 +314,19 @@ public class songController {
         Delete.setDisable(true);
         Add.setDisable(true);
     }
-
     @FXML
     void cancelEntry(ActionEvent event) {
-
         Edit.setVisible(true);
         Save.setVisible(false);
         Cancel.setVisible(false);
         Song item = listView.getSelectionModel().getSelectedItem();
         int index = listView.getSelectionModel().getSelectedIndex();
-
         titleDisplay.setText("");
-        titleDisplay.setPromptText(item.name);
-        artistDisplay.setText("");
-        artistDisplay.setPromptText(item.artist);
-        albumDisplay.setText("");
-        albumDisplay.setPromptText(item.album);
-        yearDisplay.setText("");
-        yearDisplay.setPromptText(item.year);
-
+        setTextName(item);
         listView.setMouseTransparent( false );
         listView.setFocusTraversable( true );
-
         Delete.setDisable(false);
         Add.setDisable(false);
-
     }
 
     @FXML
@@ -355,6 +335,7 @@ public class songController {
         }else {
             Song item = listView.getSelectionModel().getSelectedItem();
             int index = listView.getSelectionModel().getSelectedIndex();
+
             titleDisplay.setPromptText(item.name);
             artistDisplay.setPromptText(item.artist);
             albumDisplay.setPromptText(item.album);
@@ -365,7 +346,6 @@ public class songController {
 
     @FXML
     void saveEditSong(ActionEvent event) throws IOException {
-        //System.out.println("Saving...");
         Song item = listView.getSelectionModel().getSelectedItem();
         int index = listView.getSelectionModel().getSelectedIndex();
         if(titleDisplay.getText().trim().isEmpty() || artistDisplay.getText().trim().isEmpty()){
@@ -377,33 +357,7 @@ public class songController {
                 System.out.println("Can be edited");
                 System.out.println("Index: "+ index );
                 System.out.println("Text1: "+returnIndex(titleDisplay.getText().trim(), artistDisplay.getText().trim()) );
-                obsList.remove(index);
-                Song newSong = new Song(titleDisplay.getText().trim(), artistDisplay.getText().trim(),albumDisplay.getText().trim(), yearDisplay.getText().trim());
-                obsList.add(newSong);
-                obsList.sort(Comparator.comparing(Song::getName, String.CASE_INSENSITIVE_ORDER)
-                        .thenComparing(Song::getArtist, String.CASE_INSENSITIVE_ORDER));
-                listView.setItems(obsList);
-                listView.getSelectionModel().select(newSong);
-
-                titleDisplay.setText("");
-                titleDisplay.setPromptText(newSong.name);
-                artistDisplay.setText("");
-                artistDisplay.setPromptText(newSong.artist);
-                albumDisplay.setText("");
-                albumDisplay.setPromptText(newSong.album);
-                yearDisplay.setText("");
-                yearDisplay.setPromptText(newSong.year);
-
-                Edit.setVisible(true);
-                Save.setVisible(false);
-                Cancel.setVisible(false);
-
-                Delete.setDisable(false);
-                Add.setDisable(false);
-
-                listView.setMouseTransparent( false );
-                listView.setFocusTraversable( true );
-                saveFile();
+                obRemove(index);
 
             }else {
 
@@ -413,37 +367,34 @@ public class songController {
             }
 
         }else {
-            obsList.remove(index);
-            Song newSong = new Song(titleDisplay.getText().trim(), artistDisplay.getText().trim(),albumDisplay.getText().trim(), yearDisplay.getText().trim());
-            obsList.add(newSong);
-            obsList.sort(Comparator.comparing(Song::getName, String.CASE_INSENSITIVE_ORDER)
-                    .thenComparing(Song::getArtist, String.CASE_INSENSITIVE_ORDER));
-
-            listView.setItems(obsList);
-            listView.getSelectionModel().select(newSong);
-
-            titleDisplay.setText("");
-            titleDisplay.setPromptText(newSong.name);
-            artistDisplay.setText("");
-            artistDisplay.setPromptText(newSong.artist);
-            albumDisplay.setText("");
-            albumDisplay.setPromptText(newSong.album);
-            yearDisplay.setText("");
-            yearDisplay.setPromptText(newSong.year);
-
-            Edit.setVisible(true);
-            Save.setVisible(false);
-            Cancel.setVisible(false);
-
-            Delete.setDisable(false);
-            Add.setDisable(false);
-
-            listView.setMouseTransparent( false );
-            listView.setFocusTraversable( true );
-            saveFile();
+            obRemove(index);
 
         }
 
+    }
+
+    private void obRemove(int index) throws IOException {
+        obsList.remove(index);
+        Song newSong = new Song(titleDisplay.getText().trim(), artistDisplay.getText().trim(),albumDisplay.getText().trim(), yearDisplay.getText().trim());
+        obsList.add(newSong);
+        obsList.sort(Comparator.comparing(Song::getName, String.CASE_INSENSITIVE_ORDER)
+                .thenComparing(Song::getArtist, String.CASE_INSENSITIVE_ORDER));
+        listView.setItems(obsList);
+        listView.getSelectionModel().select(newSong);
+
+        titleDisplay.setText("");
+        setTextName(newSong);
+
+        Edit.setVisible(true);
+        Save.setVisible(false);
+        Cancel.setVisible(false);
+
+        Delete.setDisable(false);
+        Add.setDisable(false);
+
+        listView.setMouseTransparent( false );
+        listView.setFocusTraversable( true );
+        saveFile();
     }
 
     @FXML
@@ -459,8 +410,6 @@ public class songController {
 
         FileWriter writer = new FileWriter(file);
 
-
-        //for loop to iterate through the list and prints to text file
         for (Song song : obsList) {
             writer.write(song.ToString());
         }
@@ -508,7 +457,6 @@ public class songController {
         }
         return false;
     }
-
     public static int returnIndex(String name, String artist) {
         int index = 0;
         for (Song song : obsList) {
@@ -521,8 +469,6 @@ public class songController {
         }
         return index;
     }
-
-
     @FXML
     public void alertDialogue(String title, String headerText) {
         Alert alert = new Alert(AlertType.INFORMATION);
@@ -530,9 +476,6 @@ public class songController {
         alert.setHeaderText(headerText);
         Optional<ButtonType> result = alert.showAndWait();
     }
-
-
-
 
     @FXML
     public void initialize() throws FileNotFoundException {
@@ -560,12 +503,9 @@ public class songController {
             obsList.sort(Comparator.comparing(Song::getName, String.CASE_INSENSITIVE_ORDER)
                     .thenComparing(Song::getArtist, String.CASE_INSENSITIVE_ORDER));
             listView.setItems(obsList);
-
             listView.getSelectionModel().select(0);
-
             Song item = listView.getSelectionModel().getSelectedItem();
             int index = listView.getSelectionModel().getSelectedIndex();
-
             if(item == null) {
                 titleDisplay.setPromptText("");
                 albumDisplay.setPromptText("");
@@ -583,7 +523,6 @@ public class songController {
             Save.setVisible(false);
             System.out.println("Loading Data Completed!");
         }else {
-
             System.out.println("FILE DOESN'T EXISTS!!");
             obsList = FXCollections.observableArrayList();
             Cancel.setVisible(false);
